@@ -1,0 +1,129 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>HelloJavaService</groupId>
+	<artifactId>HelloJavaService</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <middleware.home>D:/FusionMiddleware</middleware.home>  <!-- CHANGE ME !!! -->
+    <admin.server.url>t3://localhost:7001</admin.server.url>  <!-- CHANGE ME !!! -->
+    <admin.username>weblogic</admin.username>  <!-- CHANGE ME !!! -->
+    <admin.password>Welcome123</admin.password>  <!-- CHANGE ME !!! -->
+  </properties>
+  <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.5.2</version>
+            </plugin>
+        </plugins>
+    </reporting>
+	<distributionManagement>
+    <repository>
+        <id>central</id>
+        <name>VINOD-releases</name>
+        <url>http://localhost:8081/artifactory/java-projects1</url>
+    </repository>
+    <snapshotRepository>
+        <id>snapshots</id>
+        <name>VINOD-snapshots</name>
+        <url>http://localhost:8081/artifactory/java-projects1</url>
+    </snapshotRepository> 
+    </distributionManagement> 
+	<build>
+			<plugins>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<warSourceDirectory>WebContent</warSourceDirectory>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+  <groupId>com.oracle.weblogic</groupId>
+  <artifactId>weblogic-maven-plugin</artifactId>
+  <version>12.2.1-0-0</version>
+  <configuration> 
+          <middlewareHome>${middleware.home}</middlewareHome>
+          <adminurl>${admin.server.url}</adminurl>
+          <user>${admin.username}</user>
+          <password>${admin.password}</password>
+          <name>${project.build.finalName}</name>
+          <source>${project.build.directory}/${project.build.finalName}.${project.packaging}</source>          
+        </configuration>
+  <executions>
+    <execution>
+      <goals>
+        <goal>deploy</goal>
+      </goals>
+      <phase>pre-integration-test</phase>
+      
+    </execution>
+  </executions>
+  </plugin>
+			
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>integration-test</phase>
+						<configuration>
+							<tasks>
+								<copy file="target/HelloJavaService.war" tofile="${deployFolder}/HelloJavaService.war" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+            <version>3.3</version>
+            <configuration>
+                <reportPlugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>cobertura-maven-plugin</artifactId>
+                        <version>2.5.1</version>
+                        <configuration>
+                            <formats>
+                                <format>html</format>
+                                <format>xml</format>
+                            </formats>
+                        </configuration>
+                    </plugin>
+                </reportPlugins>
+            </configuration>
+        </plugin>
+
+		<!-- <plugin>
+	 <groupId>org.apache.tomcat.maven</groupId>
+	<artifactId>tomcat7-maven-plugin</artifactId>
+	<version>2.2</version>
+	<configuration>
+		<url>http://localhost:8080/manager/text</url>
+		<server>Tomcat</server>
+		<path>/HelloJavaService</path>
+	</configuration>
+</plugin> -->
+		
+		</plugins>
+		<finalName>${project.artifactId}</finalName>
+   </build>
+   </project>
